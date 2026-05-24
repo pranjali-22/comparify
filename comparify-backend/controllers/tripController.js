@@ -1,5 +1,6 @@
 const Trip         = require("../models/Trip");
 const notification = require("../services/notificationService");
+const { enqueue }  = require("../queues/notificationQueue"); // NEW
 
 exports.start = async (req, res) => {
     const { pickup, dropoff, socketId, pushSubscription } = req.body;
@@ -45,7 +46,7 @@ exports.end = async (req, res) => {
         const payload = notification.payloads.tripEndedConfirmation({
             pickup: trip.pickup, dropoff: trip.dropoff,
         });
-        await notification.send(trip.pushSubscription, payload).catch(() => {});
+        await enqueue(tripId, "trip_ended", payload);
     }
 
     setTimeout(() => Trip.remove(tripId), 5000);
