@@ -2,19 +2,14 @@ const axios = require("axios");
 const qs = require("qs");
 
 let cachedToken = null;
-let tokenExpiry = null;
+let tokenExpiry  = null;
 
 const getLyftToken = async () => {
-    if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
-        return cachedToken;
-    }
+    if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) return cachedToken;
 
     const response = await axios.post(
         "https://api.lyft.com/oauth/token",
-        qs.stringify({
-            grant_type: "client_credentials",
-            scope: "public",
-        }),
+        qs.stringify({ grant_type: "client_credentials", scope: "public" }),
         {
             auth: {
                 username: process.env.LYFT_CLIENT_ID,
@@ -24,35 +19,47 @@ const getLyftToken = async () => {
         }
     );
 
-    cachedToken = response.data.access_token;
-    tokenExpiry = Date.now() + (response.data.expires_in - 60) * 1000; // refresh 1 min early
+    cachedToken  = response.data.access_token;
+    tokenExpiry  = Date.now() + (response.data.expires_in - 60) * 1000;
     return cachedToken;
 };
+
 
 exports.getPrices = async (pickupLat, pickupLng, dropoffLat, dropoffLng) => {
     try {
         const token = await getLyftToken();
 
-        const response = await axios.get("https://api.lyft.com/v1/cost", {
-            params: {
-                start_lat: pickupLat,
-                start_lng: pickupLng,
-                end_lat: dropoffLat,
-                end_lng: dropoffLng,
-            },
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const [costRes, etaRes] = await Promise.allSettled([
+            axios.get("https://api.lyft.com/v1/cost", {
+                params: {
+                    start_lat: pickupLat,
+                    start_lng: pickupLng,
+                    end_lat:   dropoffLat,
+                    end_lng:   dropoffLng,
+                },
+                headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get("https://api.lyft.com/v1/eta", {
+                params: { lat: pickupLat, lng: pickupLng },
+                headers: { Authorization: `Bearer ${token}` },
+            }),
+        ]);
 
-        return response.data.cost_estimates.map((ride) => ({
-            provider: "Lyft",
-            type: ride.display_name,
-            low: Math.round(ride.estimated_cost_cents_min / 100),   
-            high: Math.round(ride.estimated_cost_cents_max / 100),
-            duration: Math.round(ride.estimated_duration_seconds / 60),
-            surge: ride.is_valid_estimate === false,
-            surgeMultiplier: ride.primetime_percentage || "0%",
+        const costs = costRes.status === "fulfilled" ? costRes.value.data.cost_estimates : [];
+        const etas  = etaRes.status  === "fulfilled" ? etaRes.value.data.eta_estimates   : [];
+
+        const etaMap = {};
+        etas.forEach((e) => { etaMap[e.ride_type] = Math.round(e.eta_seconds / 60); });
+
+        return costs.map((ride) => ({
+            provider:         "lyft",
+            type:             ride.display_name,                              // "Lyft", "Lyft XL" etc
+            price_low:        Math.round(ride.estimated_cost_cents_min / 100),
+            price_high:       Math.round(ride.estimated_cost_cents_max / 100),
+            eta_minutes:      etaMap[ride.ride_type] ?? null,
+            surge:            !!ride.primetime_percentage && ride.primetime_percentage !== "0%",
+            surge_multiplier: ride.primetime_percentage || "0%",
+            currency:         "USD",
         }));
     } catch (err) {
         console.error("Lyft API error:", err.response?.data || err.message);
