@@ -1,33 +1,37 @@
 require("dotenv").config();
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-const compareRoutes = require("./routes/compareRoutes");
-const priceSocket = require("./socket/priceSocket");
 
-const app = express();
-const server = http.createServer(app);  // wrap express in http server for socket.io
+const express     = require("express");
+const http        = require("http");
+const { Server }  = require("socket.io");
+const cors        = require("cors");
 
-const io = new Server(server, {
+const compareRoutes      = require("./routes/compareRoutes");
+
+
+const app    = express();
+const server = http.createServer(app);
+const io     = new Server(server, {
     cors: {
-        origin: "*",  // lock this down to your frontend URL in production
+        origin:  process.env.CLIENT_ORIGIN || "http://localhost:3000",
         methods: ["GET", "POST"],
     },
 });
 
-// Middleware
-app.use(cors());
+app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:3000" }));
 app.use(express.json());
 
-app.use("/compare", compareRoutes);
+app.use("/api/compare",       compareRoutes);
+
+
+app.get("/api/vapid-public-key", (req, res) => {
+    res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
+});
+
+app.get("/health", (req, res) => res.json({ status: "ok" }));
 
 priceSocket(io);
 
-app.use((err, req, res, next) => {
-    console.error(err.message);
-    res.status(500).json({ error: "Something went wrong" });
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => {
+    console.log(`Comparify backend running on http://localhost:${PORT}`);
 });
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
