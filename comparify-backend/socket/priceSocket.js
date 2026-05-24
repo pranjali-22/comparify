@@ -1,8 +1,11 @@
 const { buildComparison } = require("../controllers/compareController");
+const Trip                = require("../models/Trip");       // NEW — needed to look up pushSubscription
+const notification        = require("../services/notificationService"); // NEW
+const { enqueue }         = require("../queues/notificationQueue");     // NEW
 
 const activeWatchers = new Map();
 
-const POLL_INTERVAL_MS = 30000; // 30 seconds
+const POLL_INTERVAL_MS = 30000;
 
 
 const diffResult = (oldResult, newResult) => {
@@ -12,9 +15,9 @@ const diffResult = (oldResult, newResult) => {
         const oldRide = oldResult.uber.find((r) => r.type === newRide.type);
         if (!oldRide) return;
         if (
-            oldRide.price_low  !== newRide.price_low  ||
-            oldRide.price_high !== newRide.price_high ||
-            oldRide.surge      !== newRide.surge       ||
+            oldRide.price_low   !== newRide.price_low   ||
+            oldRide.price_high  !== newRide.price_high  ||
+            oldRide.surge       !== newRide.surge        ||
             oldRide.eta_minutes !== newRide.eta_minutes
         ) {
             changes.push({
@@ -30,9 +33,9 @@ const diffResult = (oldResult, newResult) => {
         const oldRide = oldResult.lyft.find((r) => r.type === newRide.type);
         if (!oldRide) return;
         if (
-            oldRide.price_low  !== newRide.price_low  ||
-            oldRide.price_high !== newRide.price_high ||
-            oldRide.surge      !== newRide.surge       ||
+            oldRide.price_low   !== newRide.price_low   ||
+            oldRide.price_high  !== newRide.price_high  ||
+            oldRide.surge       !== newRide.surge        ||
             oldRide.eta_minutes !== newRide.eta_minutes
         ) {
             changes.push({
@@ -51,11 +54,63 @@ const diffResult = (oldResult, newResult) => {
     return { changes, cheapestChanged };
 };
 
+
+const enqueuePushNotifications = async (tripId, pickup, dropoff, changes, cheapestChanged, newResult) => {
+    if (!tripId) return;
+
+    const trip = await Trip.get(tripId);
+    if (!trip?.pushSubscription) return; // no subscription — nothing to do
+
+    for (const change of changes) {
+        if (change.current.price_low < change.previous.price_low) {
+            await enqueue(tripId, "price_drop", notification.payloads.priceDrop({
+                provider: change.provider,
+                type:     change.type,
+                oldPrice: change.previous.price_low,
+                newPrice: change.current.price_low,
+                pickup,
+                dropoff,
+            }));
+        }
+
+        if (change.current.surge && !change.previous.surge) {
+            await enqueue(tripId, "surge_started", notification.payloads.surgeStarted({
+                provider:   change.provider,
+                type:       change.type,
+                multiplier: change.current.surge_multiplier || "active",
+                pickup,
+                dropoff,
+            }));
+        }
+
+        if (!change.current.surge && change.previous.surge) {
+            await enqueue(tripId, "surge_ended", notification.payloads.surgeEnded({
+                provider: change.provider,
+                type:     change.type,
+                pickup,
+                dropoff,
+            }));
+        }
+    }
+
+    if (cheapestChanged && newResult.cheapest) {
+        await enqueue(tripId, "cheapest_changed", notification.payloads.cheapestChanged({
+            provider: newResult.cheapest.provider,
+            type:     newResult.cheapest.type,
+            price:    newResult.cheapest.price,
+            pickup,
+            dropoff,
+        }));
+    }
+};
+
+
 module.exports = (io) => {
     io.on("connection", (socket) => {
         console.log(`Client connected: ${socket.id}`);
 
-        socket.on("watch:prices", async ({ pickup, dropoff }) => {
+        socket.on("watch:prices", async ({ pickup, dropoff, tripId }) => {
+
             if (!pickup || !dropoff) {
                 return socket.emit("error", { message: "pickup and dropoff are required" });
             }
@@ -81,16 +136,19 @@ module.exports = (io) => {
                     const { changes, cheapestChanged } = diffResult(lastResult, newResult);
 
                     if (changes.length > 0 || cheapestChanged) {
-                        // Something changed — send full update + diff
                         socket.emit("prices:changed", {
-                            timestamp:       newResult.timestamp,
-                            changes,                    // exactly what changed and by how much
-                            cheapestChanged,            // true if cheapest provider/tier flipped
-                            cheapest:        newResult.cheapest,
-                            uber:            newResult.uber,
-                            lyft:            newResult.lyft,
+                            timestamp:      newResult.timestamp,
+                            changes,
+                            cheapestChanged,
+                            cheapest:       newResult.cheapest,
+                            uber:           newResult.uber,
+                            lyft:           newResult.lyft,
                         });
                         console.log(`Price change for ${socket.id}: ${changes.length} rides changed`);
+
+                        await enqueuePushNotifications(
+                            tripId, pickup, dropoff, changes, cheapestChanged, newResult
+                        );
                     } else {
                         socket.emit("prices:heartbeat", { timestamp: newResult.timestamp });
                     }
