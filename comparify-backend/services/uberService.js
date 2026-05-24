@@ -1,6 +1,4 @@
 const axios = require("axios");
-
-
 exports.getPrices = async (pickupLat, pickupLng, dropoffLat, dropoffLng) => {
     try {
         const [priceRes, timeRes] = await Promise.allSettled([
@@ -39,7 +37,7 @@ exports.getPrices = async (pickupLat, pickupLng, dropoffLat, dropoffLng) => {
             currency:        ride.currency_code,          // "USD"
         }));
     } catch (err) {
-        console.error("Uber API error:", err.response?.data || err.message);
+        console.error("Uber API error :", err.response?.data || err.message);
         return [];
     }
 };
