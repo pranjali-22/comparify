@@ -3,8 +3,11 @@ const express      = require("express");
 const http         = require("http");
 const { Server }   = require("socket.io");
 const cors         = require("cors");
+
 const compareRoutes = require("./routes/compareRoutes");
 const priceSocket  = require("./socket/priceSocket");
+const tripRoutes    = require("./routes/tripRoutes");
+
 
 const app    = express();
 const server = http.createServer(app);
@@ -18,6 +21,7 @@ app.use(express.json());
 app.get("/", (req, res) => res.json({ status: "Comparify running" }));
 
 app.use("/compare", compareRoutes);
+app.use("/trip",    tripRoutes);
 
 priceSocket(io);
 
