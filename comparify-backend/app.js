@@ -1,37 +1,30 @@
 require("dotenv").config();
-
-const express     = require("express");
-const http        = require("http");
-const { Server }  = require("socket.io");
-const cors        = require("cors");
-
-const compareRoutes      = require("./routes/compareRoutes");
-
+const express      = require("express");
+const http         = require("http");
+const { Server }   = require("socket.io");
+const cors         = require("cors");
+const compareRoutes = require("./routes/compareRoutes");
+const priceSocket  = require("./socket/priceSocket");
 
 const app    = express();
 const server = http.createServer(app);
 const io     = new Server(server, {
-    cors: {
-        origin:  process.env.CLIENT_ORIGIN || "http://localhost:3000",
-        methods: ["GET", "POST"],
-    },
+    cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:3000" }));
+app.use(cors());
 app.use(express.json());
 
-app.use("/api/compare",       compareRoutes);
+app.get("/", (req, res) => res.json({ status: "Comparify running" }));
 
-
-app.get("/api/vapid-public-key", (req, res) => {
-    res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
-});
-
-app.get("/health", (req, res) => res.json({ status: "ok" }));
+app.use("/compare", compareRoutes);
 
 priceSocket(io);
 
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => {
-    console.log(`Comparify backend running on http://localhost:${PORT}`);
+app.use((err, req, res, next) => {
+    console.error(err.message);
+    res.status(500).json({ error: "Something went wrong" });
 });
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
