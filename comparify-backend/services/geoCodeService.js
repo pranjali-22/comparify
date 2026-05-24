@@ -1,26 +1,37 @@
 const axios = require("axios");
 
-exports.getCoordinates = async (address) => {
+
+exports.getCoordinates = async (input) => {
+    if (typeof input === "object" && input.lat && input.lng) {
+        return { lat: input.lat, lng: input.lng };
+    }
+
     try {
         const response = await axios.get(
             "https://maps.googleapis.com/maps/api/geocode/json",
-            {
-                params: {
-                    address,
-                    key: process.env.GOOGLE_MAPS_API_KEY,
-                },
-            }
+            { params: { address: input, key: process.env.GOOGLE_MAPS_API_KEY } }
         );
 
         const location = response.data.results[0]?.geometry?.location;
-        if (!location) throw new Error("Address not found");
+        if (!location) throw new Error(`Address not found: ${input}`);
 
-        return {
-            lat: location.lat,
-            lng: location.lng,
-        };
+        return { lat: location.lat, lng: location.lng };
     } catch (err) {
         console.error("Geocode error:", err.message);
         throw new Error("Could not geocode address");
+    }
+};
+
+exports.getAddress = async (lat, lng) => {
+    try {
+        const response = await axios.get(
+            "https://maps.googleapis.com/maps/api/geocode/json",
+            { params: { latlng: `${lat},${lng}`, key: process.env.GOOGLE_MAPS_API_KEY } }
+        );
+
+        return response.data.results[0]?.formatted_address || "Current Location";
+    } catch (err) {
+        console.error("Reverse geocode error:", err.message);
+        return "Current Location";
     }
 };
