@@ -1,5 +1,5 @@
 const Trip         = require("../models/Trip");
-
+const notification = require("../services/notificationService");
 
 exports.start = (req, res) => {
     const { pickup, dropoff, socketId, pushSubscription } = req.body;
@@ -33,7 +33,6 @@ exports.cancel = (req, res) => {
     res.json({ message: "Trip cancelled" });
 };
 
-
 exports.end = async (req, res) => {
     const { tripId } = req.body;
     if (!tripId) return res.status(400).json({ error: "tripId is required" });
@@ -44,17 +43,22 @@ exports.end = async (req, res) => {
     Trip.update(tripId, { status: "ended", endedAt: new Date().toISOString() });
     console.log(`[Trip] ended ${tripId}`);
 
-
+    if (trip.pushSubscription) {
+        const payload = notification.payloads.tripEndedConfirmation({
+            pickup:  trip.pickup,
+            dropoff: trip.dropoff,
+        });
+        await notification.send(trip.pushSubscription, payload).catch(() => {});
+    }
 
     setTimeout(() => Trip.remove(tripId), 5000);
 
     res.json({ message: "Trip ended", tripId });
 };
 
-
 exports.active = (req, res) => {
     const trips = Trip.allActive().map(({ tripId, pickup, dropoff, socketId, startedAt }) => ({
-        tripId, pickup, dropoff, socketId, startedAt,   // omit pushSubscription for privacy
+        tripId, pickup, dropoff, socketId, startedAt,
     }));
     res.json({ count: trips.length, trips });
 };
@@ -64,6 +68,6 @@ exports.status = (req, res) => {
     const trip = Trip.get(req.params.tripId);
     if (!trip) return res.status(404).json({ error: "Trip not found" });
 
-    const { pushSubscription, ...safe } = trip;   // don't expose subscription object
+    const { pushSubscription, ...safe } = trip;
     res.json(safe);
 };
