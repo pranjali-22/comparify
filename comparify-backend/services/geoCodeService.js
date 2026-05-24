@@ -1,11 +1,9 @@
 const axios = require("axios");
 
-
 exports.getCoordinates = async (input) => {
     if (typeof input === "object" && input.lat && input.lng) {
         return { lat: input.lat, lng: input.lng };
     }
-
     try {
         const response = await axios.get(
             "https://maps.googleapis.com/maps/api/geocode/json",
@@ -21,6 +19,7 @@ exports.getCoordinates = async (input) => {
         throw new Error("Could not geocode address");
     }
 };
+
 
 exports.getAddress = async (lat, lng) => {
     try {

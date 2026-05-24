@@ -54,6 +54,7 @@ const diffResult = (oldResult, newResult) => {
 module.exports = (io) => {
     io.on("connection", (socket) => {
         console.log(`Client connected: ${socket.id}`);
+
         socket.on("watch:prices", async ({ pickup, dropoff }) => {
             if (!pickup || !dropoff) {
                 return socket.emit("error", { message: "pickup and dropoff are required" });
@@ -80,6 +81,7 @@ module.exports = (io) => {
                     const { changes, cheapestChanged } = diffResult(lastResult, newResult);
 
                     if (changes.length > 0 || cheapestChanged) {
+                        // Something changed — send full update + diff
                         socket.emit("prices:changed", {
                             timestamp:       newResult.timestamp,
                             changes,                    // exactly what changed and by how much
