@@ -23,14 +23,14 @@ const send = async (subscription, payload) => {
 
 
 const priceDrop = ({ provider, type, oldPrice, newPrice, pickup, dropoff }) => ({
-    title: `💸 Price drop — ${provider === "uber" ? "Uber" : "Lyft"} ${type}`,
+    title: ` Price drop — ${provider === "uber" ? "Uber" : "Lyft"} ${type}`,
     body:  `$${oldPrice} → $${newPrice} · ${pickup} → ${dropoff}`,
     tag:   `price-drop-${provider}-${type}`,
     data:  { event: "price_drop", provider, type, oldPrice, newPrice },
 });
 
 const cheapestChanged = ({ provider, type, price, pickup, dropoff }) => ({
-    title: `🏆 Cheapest ride changed`,
+    title: ` Cheapest ride changed`,
     body:  `${provider === "uber" ? "Uber" : "Lyft"} ${type} is now cheapest at $${price} · ${pickup} → ${dropoff}`,
     tag:   "cheapest-changed",
     data:  { event: "cheapest_changed", provider, type, price },
@@ -51,7 +51,7 @@ const surgeEnded = ({ provider, type, pickup, dropoff }) => ({
 });
 
 const tripEndedConfirmation = ({ pickup, dropoff }) => ({
-    title: `🏁 Trip watch ended`,
+    title: ` Trip watch ended`,
     body:  `Stopped monitoring prices for ${pickup} → ${dropoff}`,
     tag:   "trip-ended",
     data:  { event: "trip_ended" },

@@ -8,3 +8,4 @@ client.on("error",   (err) => console.error("[Redis] error:", err.message));
 client.on("connect", ()    => console.log("[Redis] connected"));
 
 module.exports = client;
+// make a new client and export that client to files

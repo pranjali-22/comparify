@@ -1,5 +1,16 @@
 const axios = require("axios");
+// axios - http api requests
 
+
+// calls google api
+// takes address and api key
+// returns the lat and long of the address
+// throw error if address not found
+
+// Basiclaly this service has two functions -
+// one takes address returns the lat and long and
+// other takes corrdinates and returns address
+// both of them use google map api to do this
 exports.getCoordinates = async (input) => {
     if (typeof input === "object" && input.lat && input.lng) {
         return { lat: input.lat, lng: input.lng };
@@ -20,6 +31,7 @@ exports.getCoordinates = async (input) => {
     }
 };
 
+// get address from coordinates
 
 exports.getAddress = async (lat, lng) => {
     try {

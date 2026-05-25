@@ -3,7 +3,17 @@ const qs = require("qs");
 
 let cachedToken = null;
 let tokenExpiry  = null;
+// current lyt access token
+// token expiration time
 
+
+
+// connects the backend api to fetch ride prices and estimated arrival time
+
+
+// gets the OAuth token from lyft
+// if token already exists and has not not expired - then this is the token
+//  otherwise request token - using a post request and credentials from env
 const getLyftToken = async () => {
     if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) return cachedToken;
 
@@ -24,7 +34,27 @@ const getLyftToken = async () => {
     return cachedToken;
 };
 
-
+// takes the token
+// two api requests at the same time
+// first find the cost
+// find authorisation
+// eta - how far nearby drivers are
+// eta map lookup - gives the information about the fdrivers
+// [
+//   {
+//      type: "Lyft",
+//      price_low: 12,
+//      price_high: 15,
+//      eta_minutes: 4
+//   },
+//
+//   {
+//      type: "Lyft XL",
+//      price_low: 20,
+//      price_high: 25,
+//      eta_minutes: 6
+//   }
+// ]
 exports.getPrices = async (pickupLat, pickupLng, dropoffLat, dropoffLng) => {
     try {
         const token = await getLyftToken();

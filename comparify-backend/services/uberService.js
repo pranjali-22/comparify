@@ -1,4 +1,5 @@
 const axios = require("axios");
+// same as lyft
 exports.getPrices = async (pickupLat, pickupLng, dropoffLat, dropoffLng) => {
     try {
         const [priceRes, timeRes] = await Promise.allSettled([

@@ -1,19 +1,21 @@
-require("dotenv").config();
-const express      = require("express");
-const http         = require("http");
-const { Server }   = require("socket.io");
-const cors         = require("cors");
+require("dotenv").config(); // for env file
+const express      = require("express"); // for backend framework
+const http         = require("http"); // for http server
+const { Server }   = require("socket.io"); // for real time communication
+const cors         = require("cors"); // allow frontend to access backend
 
-const redis         = require("./config/redis");
+const redis         = require("./config/redis"); // import redis client
 const compareRoutes = require("./routes/compareRoutes");
 const tripRoutes    = require("./routes/tripRoutes");
 const priceSocket   = require("./socket/priceSocket");
 
-const app    = express();
-const server = http.createServer(app);
+const app    = express(); // create express app
+const server = http.createServer(app); // wraps server in http server
 const io     = new Server(server, {
     cors: { origin: "*", methods: ["GET", "POST"] },
 });
+// creates socket server
+
 
 app.use(cors());
 app.use(express.json());
@@ -23,10 +25,14 @@ app.get("/", (req, res) => res.json({ status: "Comparify running" }));
 app.get("/vapid-public-key", (req, res) => {
     res.json({ publicKey: process.env.VAPID_PUBLIC_KEY });
 });
+// sends a valid ke for push notifications
 
 app.use("/compare", compareRoutes);
 app.use("/trip",    tripRoutes);
 
+// socket setup
+// intialise live socket evernts
+// error handling middleware
 priceSocket(io);
 
 app.use((err, req, res, next) => {
@@ -54,3 +60,5 @@ const shutdown = async () => {
 
 process.on("SIGTERM", shutdown);
 process.on("SIGINT",  shutdown);
+
+// graceful shutdown when app stops running
