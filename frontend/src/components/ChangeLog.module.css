@@ -1,0 +1,75 @@
+.wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.event {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  animation: slideIn 0.25s ease;
+  font-size: 11px;
+}
+
+.event:last-child { border-bottom: none; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.icon {
+  font-size: 13px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.price_drop .icon    { color: var(--green); }
+.surge_started .icon { color: var(--red); }
+.surge_ended .icon   { color: var(--green); }
+.cheapest_changed .icon { color: var(--amber); }
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eventLabel {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 11px;
+}
+
+.desc {
+  color: var(--muted);
+  font-size: 10px;
+  font-style: italic;
+}
+
+.time {
+  color: var(--muted);
+  font-size: 10px;
+  flex-shrink: 0;
+  font-style: italic;
+}
