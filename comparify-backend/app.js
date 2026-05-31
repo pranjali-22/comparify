@@ -18,7 +18,7 @@ const io     = new Server(server, {
 
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // allows json to be read and parse in body
 
 app.get("/", (req, res) => res.json({ status: "Comparify running" }));
 
@@ -58,7 +58,7 @@ const shutdown = async () => {
     process.exit(0);
 };
 
-process.on("SIGTERM", shutdown);
-process.on("SIGINT",  shutdown);
+process.on("SIGTERM", shutdown); // Ctrl + C
+process.on("SIGINT",  shutdown); // Docker
 
 // graceful shutdown when app stops running

@@ -7,6 +7,10 @@ const connection = {
     port: process.env.REDIS_PORT || 6379,
 };
 
+//  connection for bullmq
+// each notification has a different startegy
+// delay - retry waits longer
+
 
 const RETRY_CONFIGS = {
     price_drop:       { attempts: 3, backoff: { type: "exponential", delay: 2000 } },
@@ -24,10 +28,15 @@ const notifQueue = new Queue("notifications", {
     },
 });
 
+// creates a queue in redis - called notification
+// only keeps last 100
+//
+
 const enqueue = (tripId, type, payload) => {
     const retryConfig = RETRY_CONFIGS[type] || { attempts: 2 };
     return notifQueue.add(type, { tripId, type, payload }, retryConfig);
 };
+// adds to the queue
 
 const worker = new Worker(
     "notifications",

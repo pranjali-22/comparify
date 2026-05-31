@@ -47,7 +47,7 @@ const buildComparison = async (pickup, dropoff) => {
         dropoff:        typeof dropoff === "string" ? dropoff : `${dropoffCoords.lat},${dropoffCoords.lng}`,
         pickupCoords,
         dropoffCoords,
-        cheapest,               // { provider, type, price } — used by frontend to flag in color
+        cheapest,               // { provider, type, price }
         uber:           uberRides,
         lyft:           lyftRides,
         timestamp:      new Date().toISOString(),

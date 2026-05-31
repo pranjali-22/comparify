@@ -13,6 +13,8 @@ const send = async (subscription, payload) => {
         await webpush.sendNotification(subscription, JSON.stringify(payload));
     } catch (err) {
         if (err.statusCode === 410 || err.statusCode === 404) {
+            // subscrption expired / deleted subscription
+            // user unsubscribed
             console.warn("Push subscription gone:", err.message);
             return { expired: true };
         }
@@ -37,7 +39,7 @@ const cheapestChanged = ({ provider, type, price, pickup, dropoff }) => ({
 });
 
 const surgeStarted = ({ provider, type, multiplier, pickup, dropoff }) => ({
-    title: `⚡ Surge started — ${provider === "uber" ? "Uber" : "Lyft"} ${type}`,
+    title: ` Surge started — ${provider === "uber" ? "Uber" : "Lyft"} ${type}`,
     body:  `${multiplier} surge pricing is now active · ${pickup} → ${dropoff}`,
     tag:   `surge-${provider}-${type}`,
     data:  { event: "surge_started", provider, type, multiplier },

@@ -12,6 +12,9 @@ const sockKey = (socketId) => `${IDX_SOCKET}${socketId}`;
 const serialize = (obj) => JSON.stringify(obj);
 const deserialize = (str) => str ? JSON.parse(str) : null;
 
+// functions to convert javascript objects to string and string to javascript objects
+
+
 
 const create = async ({ pickup, dropoff, socketId, pushSubscription }) => {
     const tripId = uuidv4();
@@ -42,7 +45,6 @@ const getBySocketId = async (socketId) => {
     const tripId = await redis.get(sockKey(socketId));
     if (!tripId) return null;
     const trip = await get(tripId);
-    // Only return if still actively watching
     return trip?.status === "watching" ? trip : null;
 };
 
