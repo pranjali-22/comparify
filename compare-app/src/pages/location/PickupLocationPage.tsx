@@ -1,12 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Location {
     place_id: string;
     name: string;
     formatted_address: string;
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
 }
 
 function PickupLocationPage() {
+    const navigate = useNavigate();
+
     const [search, setSearch] = useState("");
     const [locations, setLocations] = useState<Location[]>([]);
     const [loading, setLoading] = useState(false);
@@ -16,17 +23,16 @@ function PickupLocationPage() {
 
         try {
             setLoading(true);
-            console.log(encodeURIComponent(search))
+
             const response = await fetch(
-                `http://localhost:3000/api/locations?q=${encodeURIComponent(search)}`
+                `http://localhost:3000/api/locations?q=${encodeURIComponent(
+                    search
+                )}`
             );
 
-
-
             const data = await response.json();
-            console.log(data)
 
-            setLocations(data || []);
+            setLocations(data);
         } catch (error) {
             console.error("Failed to fetch locations:", error);
             setLocations([]);
@@ -35,12 +41,14 @@ function PickupLocationPage() {
         }
     };
 
-    const handleLocationSelect = (location: Location) => {
-        console.log("Selected:", location);
-
-        // Later:
-        // Save location
-        // Navigate back
+    const handleLocationSelect = (
+        location: Location
+    ) => {
+        navigate("/", {
+            state: {
+                pickupLocation: location,
+            },
+        });
     };
 
     return (
@@ -143,7 +151,7 @@ function PickupLocationPage() {
                         border: 1px solid #d9dee8;
                         border-radius: 22px;
 
-                        padding: 22px;
+                        padding: 20px;
 
                         margin-bottom: 14px;
 
@@ -163,13 +171,13 @@ function PickupLocationPage() {
 
                     .location-left {
                         display: flex;
-                        gap: 18px;
+                        gap: 16px;
                         flex: 1;
                     }
 
                     .pin-icon {
-                        width: 42px;
-                        height: 42px;
+                        width: 40px;
+                        height: 40px;
 
                         border-radius: 50%;
 
@@ -189,26 +197,26 @@ function PickupLocationPage() {
                     }
 
                     .location-name {
-                        font-size: 1.15rem;
+                        font-size: 1.05rem;
                         font-weight: 600;
                         color: #111827;
 
-                        margin-bottom: 8px;
+                        margin-bottom: 6px;
                     }
 
                     .location-address {
                         color: #6b7280;
 
-                        font-size: 0.95rem;
+                        font-size: 0.92rem;
 
-                        line-height: 1.6;
+                        line-height: 1.5;
                     }
 
                     .location-arrow {
-                        width: 44px;
-                        height: 44px;
+                        width: 40px;
+                        height: 40px;
 
-                        border-radius: 14px;
+                        border-radius: 12px;
 
                         background: #f8fafc;
 
@@ -218,7 +226,7 @@ function PickupLocationPage() {
 
                         color: #6b7280;
 
-                        font-size: 1.5rem;
+                        font-size: 1.4rem;
 
                         margin-left: 16px;
                     }
@@ -237,7 +245,8 @@ function PickupLocationPage() {
                     </h1>
 
                     <div className="subtitle">
-                        Search and select your pickup address
+                        Search and select your pickup
+                        address
                     </div>
                 </div>
 
@@ -281,7 +290,9 @@ function PickupLocationPage() {
                                 key={location.place_id}
                                 className="location-card"
                                 onClick={() =>
-                                    handleLocationSelect(location)
+                                    handleLocationSelect(
+                                        location
+                                    )
                                 }
                             >
                                 <div className="location-left">
@@ -295,7 +306,9 @@ function PickupLocationPage() {
                                         </div>
 
                                         <div className="location-address">
-                                            {location.formatted_address}
+                                            {
+                                                location.formatted_address
+                                            }
                                         </div>
                                     </div>
                                 </div>
