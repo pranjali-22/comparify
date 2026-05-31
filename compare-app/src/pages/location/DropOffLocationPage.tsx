@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {searchLocations} from "../../api/location.ts";
 
 interface Location {
     place_id: string;
@@ -24,17 +25,15 @@ function DropOffLocationPage() {
         try {
             setLoading(true);
 
-            const response = await fetch(
-                `http://localhost:3000/api/locations?q=${encodeURIComponent(
-                    search
-                )}`
+            const locations = await searchLocations(search);
+
+            setLocations(locations);
+        } catch (error) {
+            console.error(
+                "Failed to fetch locations:",
+                error
             );
 
-            const data = await response.json();
-
-            setLocations(data);
-        } catch (error) {
-            console.error("Failed to fetch locations:", error);
             setLocations([]);
         } finally {
             setLoading(false);
