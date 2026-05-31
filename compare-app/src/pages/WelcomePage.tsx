@@ -7,9 +7,7 @@ function WelcomePage() {
         <div className="welcome-page">
             <div className="hero">
                 <h1>Comparify</h1>
-                <p>
-                    Compare cab fares and food delivery options in one place
-                </p>
+                <p>Compare rides and food delivery in seconds</p>
             </div>
 
             <div className="card-grid">
@@ -17,11 +15,13 @@ function WelcomePage() {
                     className="feature-card"
                     onClick={() => navigate("/cabs")}
                 >
-                    <div className="feature-icon">🚕</div>
+                    <div className="icon">🚕</div>
+
                     <h2>Compare Cabs</h2>
+
                     <p>
-                        Find the cheapest ride across Uber, Ola and other
-                        providers.
+                        Compare fares across ride providers and
+                        choose the best option.
                     </p>
                 </div>
 
@@ -29,11 +29,13 @@ function WelcomePage() {
                     className="feature-card"
                     onClick={() => navigate("/food")}
                 >
-                    <div className="feature-icon">🍔</div>
+                    <div className="icon">🍔</div>
+
                     <h2>Find Food</h2>
+
                     <p>
-                        Discover restaurants nearby and compare delivery
-                        options.
+                        Discover restaurants nearby and compare
+                        delivery options instantly.
                     </p>
                 </div>
             </div>
