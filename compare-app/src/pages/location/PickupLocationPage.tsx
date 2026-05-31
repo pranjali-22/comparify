@@ -44,7 +44,7 @@ function PickupLocationPage() {
     const handleLocationSelect = (
         location: Location
     ) => {
-        navigate("/", {
+        navigate("/cabs", {
             state: {
                 pickupLocation: location,
             },

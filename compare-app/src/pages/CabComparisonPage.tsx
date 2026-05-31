@@ -1,7 +1,9 @@
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
 function CabComparisonPage() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const pickupLocation = location.state?.pickupLocation;
 
     return (
         <>
@@ -148,9 +150,25 @@ function CabComparisonPage() {
                     <div className="location-row">
                         <span className="dot green"></span>
 
-                        <span className="location-text">
-              Set Pickup Location
-            </span>
+                        <div style={{ flex: 1 }}>
+                            <div className="location-text">
+                                {pickupLocation
+                                    ? pickupLocation.name
+                                    : "Set Pickup Location"}
+                            </div>
+
+                            {pickupLocation && (
+                                <div
+                                    style={{
+                                        fontSize: "0.8rem",
+                                        color: "#6b7280",
+                                        marginTop: "4px",
+                                    }}
+                                >
+                                    {pickupLocation.formatted_address}
+                                </div>
+                            )}
+                        </div>
 
                         <span className="arrow">›</span>
                     </div>
