@@ -1,17 +1,20 @@
+import { useNavigate } from "react-router-dom";
+
 function CabComparisonPage() {
+    const navigate = useNavigate();
+
     return (
         <>
             <style>
                 {`
           * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
           }
 
           body {
+            margin: 0;
             background: #f5f7fb;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: Inter, sans-serif;
           }
 
           .cab-container {
@@ -28,8 +31,8 @@ function CabComparisonPage() {
           }
 
           .cab-subtitle {
-            color: #6b7280;
             font-size: 1.1rem;
+            color: #6b7280;
             margin-bottom: 40px;
           }
 
@@ -41,8 +44,8 @@ function CabComparisonPage() {
           }
 
           .routes-header h2 {
+            margin: 0;
             font-size: 1.8rem;
-            color: #111827;
           }
 
           .swap-btn {
@@ -51,14 +54,8 @@ function CabComparisonPage() {
             border: none;
             border-radius: 12px;
             background: #e5e7eb;
-            color: #6b7280;
             cursor: pointer;
-            font-size: 1.1rem;
-            transition: 0.2s ease;
-          }
-
-          .swap-btn:hover {
-            background: #d1d5db;
+            font-size: 1rem;
           }
 
           .location-card {
@@ -67,7 +64,13 @@ function CabComparisonPage() {
             border-radius: 20px;
             padding: 20px 24px;
             margin-bottom: 18px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+
+          .location-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
           }
 
           .label {
@@ -112,33 +115,11 @@ function CabComparisonPage() {
             font-size: 1.1rem;
             font-weight: 500;
             color: #1f2937;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
           }
 
           .arrow {
-            font-size: 1.8rem;
             color: #9ca3af;
-            flex-shrink: 0;
-          }
-
-          @media (max-width: 768px) {
-            .cab-container {
-              padding: 24px;
-            }
-
-            .cab-title {
-              font-size: 2rem;
-            }
-
-            .routes-header h2 {
-              font-size: 1.5rem;
-            }
-
-            .location-text {
-              font-size: 1rem;
-            }
+            font-size: 1.8rem;
           }
         `}
             </style>
@@ -158,15 +139,17 @@ function CabComparisonPage() {
                     </button>
                 </div>
 
-                <div className="location-card">
+                <div
+                    className="location-card"
+                    onClick={() => navigate("/pickup-location")}
+                >
                     <span className="label from">FROM</span>
 
                     <div className="location-row">
                         <span className="dot green"></span>
 
                         <span className="location-text">
-              Harshit Nagar Rd, behind Vishwakarma Mandir, Mohba Bazar,
-              Raipur, Chhattisgarh 492099, India
+              Set Pickup Location
             </span>
 
                         <span className="arrow">›</span>
