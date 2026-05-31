@@ -1,286 +1,312 @@
 import { useState } from "react";
 
+interface Location {
+    id: string;
+    name: string;
+    fullAddress: string;
+    lat: number;
+    lng: number;
+}
+
 function PickupLocationPage() {
     const [search, setSearch] = useState("");
+    const [locations, setLocations] = useState<Location[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const addresses = [
-        {
-            title: "Railway Station",
-            address: "Station Road, Moudhapara, Raipur",
-        },
-        {
-            title: "Airport Road",
-            address: "Mana, Raipur, Chhattisgarh",
-        },
-        {
-            title: "Pandri Bus Stand",
-            address: "Pandri, Raipur, Chhattisgarh",
-        },
-    ];
+    const handleSearch = async () => {
+        if (!search.trim()) return;
+
+        try {
+            setLoading(true);
+            console.log(encodeURIComponent(search))
+            const response = await fetch(
+                `http://localhost:3000/api/locations?q=${encodeURIComponent(search)}`
+            );
+
+
+            const data = await response.json();
+            console.log(data.results)
+
+            setLocations(data.results || []);
+        } catch (error) {
+            console.error("Failed to fetch locations:", error);
+            setLocations([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLocationSelect = (location: Location) => {
+        console.log("Selected:", location);
+
+        // Later:
+        // Save location
+        // Navigate back
+    };
 
     return (
         <>
             <style>
                 {`
-          * {
-            box-sizing: border-box;
-          }
+                    * {
+                        box-sizing: border-box;
+                    }
 
-          body {
-            margin: 0;
-            background: #f8fafc;
-            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
-          }
+                    body {
+                        margin: 0;
+                        background: #f8fafc;
+                        font-family: Inter, sans-serif;
+                    }
 
-          .pickup-page {
-            min-height: 100vh;
-          }
+                    .pickup-page {
+                        min-height: 100vh;
+                    }
 
-          .header {
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 24px 32px;
-          }
+                    .header {
+                        background: white;
+                        border-bottom: 1px solid #e5e7eb;
+                        padding: 24px 32px;
+                    }
 
-          .title {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #111827;
-          }
+                    .title {
+                        margin: 0;
+                        font-size: 2rem;
+                        font-weight: 700;
+                        color: #111827;
+                    }
 
-          .subtitle {
-            margin-top: 6px;
-            color: #64748b;
-            font-size: 0.95rem;
-          }
+                    .subtitle {
+                        margin-top: 6px;
+                        color: #64748b;
+                        font-size: 0.95rem;
+                    }
 
-          .content {
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 24px;
-          }
+                    .content {
+                        max-width: 850px;
+                        margin: 0 auto;
+                        padding: 24px;
+                    }
 
-          .search-box {
-            height: 56px;
-            background: white;
-            border: 1px solid #dbe2ea;
-            border-radius: 16px;
+                    .search-container {
+                        display: flex;
+                        gap: 12px;
+                        margin-bottom: 24px;
+                    }
 
-            display: flex;
-            align-items: center;
+                    .search-input {
+                        flex: 1;
+                        height: 52px;
 
-            padding: 0 18px;
-            margin-bottom: 16px;
-          }
+                        border: 1px solid #d1d5db;
+                        border-radius: 16px;
 
-          .search-icon {
-            color: #64748b;
-          }
+                        padding: 0 16px;
 
-          .search-box input {
-            border: none;
-            outline: none;
-            background: transparent;
+                        font-size: 1rem;
+                        outline: none;
+                    }
 
-            width: 100%;
-            margin-left: 12px;
+                    .search-input:focus {
+                        border-color: #2563eb;
+                    }
 
-            font-size: 1rem;
-          }
+                    .search-btn {
+                        border: none;
+                        background: #2563eb;
+                        color: white;
 
-          .current-location {
-            background: #eef4ff;
-            border: 1px solid #d7e3ff;
-            border-radius: 16px;
+                        padding: 0 24px;
 
-            padding: 16px 18px;
+                        border-radius: 16px;
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+                        cursor: pointer;
 
-            cursor: pointer;
-            transition: 0.2s;
-          }
+                        font-weight: 600;
+                        font-size: 0.95rem;
+                    }
 
-          .current-location:hover {
-            background: #e7efff;
-          }
+                    .search-btn:hover {
+                        background: #1d4ed8;
+                    }
 
-          .location-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-          }
+                    .loading {
+                        color: #6b7280;
+                        margin-bottom: 16px;
+                    }
 
-          .location-icon {
-            width: 40px;
-            height: 40px;
+                    .results {
+                        margin-top: 20px;
+                    }
 
-            border-radius: 50%;
+                    .location-card {
+                        background: white;
 
-            background: rgba(59,130,246,0.12);
+                        border: 1px solid #d9dee8;
+                        border-radius: 22px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
+                        padding: 22px;
 
-          .location-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #2563eb;
-          }
+                        margin-bottom: 14px;
 
-          .location-subtitle {
-            font-size: 0.85rem;
-            color: #4f7cff;
-            margin-top: 2px;
-          }
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
 
-          .section-title {
-            margin-top: 28px;
-            margin-bottom: 12px;
+                        cursor: pointer;
 
-            font-size: 1rem;
-            font-weight: 600;
-            color: #374151;
-          }
+                        transition: all 0.2s ease;
+                    }
 
-          .address-card {
-            background: white;
+                    .location-card:hover {
+                        border-color: #c7d2fe;
+                        background: #fafcff;
+                    }
 
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
+                    .location-left {
+                        display: flex;
+                        gap: 18px;
+                        flex: 1;
+                    }
 
-            padding: 14px 18px;
+                    .pin-icon {
+                        width: 42px;
+                        height: 42px;
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+                        border-radius: 50%;
 
-            margin-bottom: 10px;
+                        background: #eef2ff;
 
-            cursor: pointer;
-            transition: 0.2s;
-          }
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
 
-          .address-card:hover {
-            border-color: #3b82f6;
-            background: #fbfdff;
-          }
+                        flex-shrink: 0;
 
-          .address-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-          }
+                        font-size: 1rem;
+                    }
 
-          .pin {
-            width: 34px;
-            height: 34px;
+                    .location-details {
+                        flex: 1;
+                    }
 
-            border-radius: 50%;
+                    .location-name {
+                        font-size: 1.15rem;
+                        font-weight: 600;
+                        color: #111827;
 
-            background: #f1f5f9;
+                        margin-bottom: 8px;
+                    }
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+                    .location-address {
+                        color: #6b7280;
 
-            flex-shrink: 0;
-          }
+                        font-size: 0.95rem;
 
-          .address-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 2px;
-          }
+                        line-height: 1.6;
+                    }
 
-          .address-subtitle {
-            font-size: 0.82rem;
-            color: #6b7280;
-          }
+                    .location-arrow {
+                        width: 44px;
+                        height: 44px;
 
-          .arrow {
-            color: #9ca3af;
-            font-size: 1.2rem;
-          }
-        `}
+                        border-radius: 14px;
+
+                        background: #f8fafc;
+
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        color: #6b7280;
+
+                        font-size: 1.5rem;
+
+                        margin-left: 16px;
+                    }
+
+                    .empty {
+                        color: #6b7280;
+                        margin-top: 20px;
+                    }
+                `}
             </style>
 
             <div className="pickup-page">
                 <div className="header">
-                    <h1 className="title">Set Pickup Location</h1>
+                    <h1 className="title">
+                        Set Pickup Location
+                    </h1>
+
                     <div className="subtitle">
-                        Enter your pickup address
+                        Search and select your pickup address
                     </div>
                 </div>
 
                 <div className="content">
-                    <div className="search-box">
-                        <span className="search-icon">🔍</span>
-
+                    <div className="search-container">
                         <input
+                            className="search-input"
                             type="text"
-                            placeholder="Search for an address..."
+                            placeholder="Search location..."
                             value={search}
                             onChange={(e) =>
                                 setSearch(e.target.value)
                             }
                         />
-                    </div>
 
-                    <div className="current-location">
-                        <div className="location-left">
-                            <div className="location-icon">
-                                📍
-                            </div>
-
-                            <div>
-                                <div className="location-title">
-                                    Use Current Location
-                                </div>
-
-                                <div className="location-subtitle">
-                                    Automatically detect your location
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="arrow">›</div>
-                    </div>
-
-                    <div className="section-title">
-                        Recent Locations
-                    </div>
-
-                    {addresses.map((address) => (
-                        <div
-                            className="address-card"
-                            key={address.title}
+                        <button
+                            className="search-btn"
+                            onClick={handleSearch}
                         >
-                            <div className="address-left">
-                                <div className="pin">
-                                    📍
+                            Search
+                        </button>
+                    </div>
+
+                    {loading && (
+                        <div className="loading">
+                            Searching locations...
+                        </div>
+                    )}
+
+                    {!loading &&
+                        search &&
+                        locations.length === 0 && (
+                            <div className="empty">
+                                No locations found.
+                            </div>
+                        )}
+
+                    <div className="results">
+                        {locations.map((location) => (
+                            <div
+                                key={location.id}
+                                className="location-card"
+                                onClick={() =>
+                                    handleLocationSelect(location)
+                                }
+                            >
+                                <div className="location-left">
+                                    <div className="pin-icon">
+                                        📍
+                                    </div>
+
+                                    <div className="location-details">
+                                        <div className="location-name">
+                                            {location.name}
+                                        </div>
+
+                                        <div className="location-address">
+                                            {location.fullAddress}
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <div className="address-title">
-                                        {address.title}
-                                    </div>
-
-                                    <div className="address-subtitle">
-                                        {address.address}
-                                    </div>
+                                <div className="location-arrow">
+                                    ›
                                 </div>
                             </div>
-
-                            <div className="arrow">›</div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </>
