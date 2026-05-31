@@ -1,11 +1,9 @@
 import { useState } from "react";
 
 interface Location {
-    id: string;
+    place_id: string;
     name: string;
-    fullAddress: string;
-    lat: number;
-    lng: number;
+    formatted_address: string;
 }
 
 function PickupLocationPage() {
@@ -24,10 +22,11 @@ function PickupLocationPage() {
             );
 
 
-            const data = await response.json();
-            console.log(data.results)
 
-            setLocations(data.results || []);
+            const data = await response.json();
+            console.log(data)
+
+            setLocations(data || []);
         } catch (error) {
             console.error("Failed to fetch locations:", error);
             setLocations([]);
@@ -279,7 +278,7 @@ function PickupLocationPage() {
                     <div className="results">
                         {locations.map((location) => (
                             <div
-                                key={location.id}
+                                key={location.place_id}
                                 className="location-card"
                                 onClick={() =>
                                     handleLocationSelect(location)
@@ -296,7 +295,7 @@ function PickupLocationPage() {
                                         </div>
 
                                         <div className="location-address">
-                                            {location.fullAddress}
+                                            {location.formatted_address}
                                         </div>
                                     </div>
                                 </div>
