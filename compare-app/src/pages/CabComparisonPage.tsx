@@ -1,9 +1,15 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 function CabComparisonPage() {
     const navigate = useNavigate();
-    const location = useLocation();
+    // const location = useLocation();
 
-    const pickupLocation = location.state?.pickupLocation;
+    const pickupLocation = JSON.parse(
+        localStorage.getItem("pickupLocation") || "null"
+    );
+
+    const dropOffLocation = JSON.parse(
+        localStorage.getItem("dropOffLocation") || "null"
+    );
 
     return (
         <>
@@ -154,7 +160,7 @@ function CabComparisonPage() {
                             <div className="location-text">
                                 {pickupLocation
                                     ? pickupLocation.name
-                                    : "Set Pickup Location"}
+                                    : "Set Pick up Location"}
                             </div>
 
                             {pickupLocation && (
@@ -183,9 +189,25 @@ function CabComparisonPage() {
                     <div className="location-row">
                         <span className="dot red"></span>
 
-                        <span className="location-text">
-            Set Drop-off Location
-        </span>
+                        <div style={{ flex: 1 }}>
+                            <div className="location-text">
+                                {dropOffLocation
+                                    ? dropOffLocation.name
+                                    : "Set Drop off Location"}
+                            </div>
+
+                            {dropOffLocation && (
+                                <div
+                                    style={{
+                                        fontSize: "0.8rem",
+                                        color: "#6b7280",
+                                        marginTop: "4px",
+                                    }}
+                                >
+                                    {dropOffLocation.formatted_address}
+                                </div>
+                            )}
+                        </div>
 
                         <span className="arrow">›</span>
                     </div>

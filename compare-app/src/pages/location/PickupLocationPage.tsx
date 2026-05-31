@@ -44,11 +44,12 @@ function PickupLocationPage() {
     const handleLocationSelect = (
         location: Location
     ) => {
-        navigate("/cabs", {
-            state: {
-                pickupLocation: location,
-            },
-        });
+        localStorage.setItem(
+            "pickupLocation",
+            JSON.stringify(location)
+        );
+
+        navigate("/cabs");
     };
 
     return (
@@ -241,11 +242,11 @@ function PickupLocationPage() {
             <div className="pickup-page">
                 <div className="header">
                     <h1 className="title">
-                        Set Pickup Location
+                        Set Pick up Location
                     </h1>
 
                     <div className="subtitle">
-                        Search and select your pickup
+                        Search and select your pick up
                         address
                     </div>
                 </div>
