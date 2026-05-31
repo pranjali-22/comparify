@@ -23,17 +23,15 @@ async function getPlaceDetails(placeId, apiKey) {
 }
 
 async function searchLocations(query, apiKey) {
-    // Return from cache if available
     const cached = cache.get(query);
     if (cached) return { source: "cache", results: cached };
 
-    // Step 1: Autocomplete
     const autocompleteRes = await axios.get(PLACES_AUTOCOMPLETE_URL, {
         params: {
             input: query,
             key: apiKey,
             language: "en",
-            // components: "country:in",  // uncomment to restrict to India
+            // components: "country:in", // uncomment to restrict to India
         },
     });
 
@@ -42,8 +40,8 @@ async function searchLocations(query, apiKey) {
         throw new Error(`Google API error: ${status}`);
     }
 
-    // Step 2: Get details (lat/lng) for each prediction
     const predictions = autocompleteRes.data.predictions;
+
     const results = await Promise.all(
         predictions.map(async (place) => {
             try {
