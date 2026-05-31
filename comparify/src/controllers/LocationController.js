@@ -14,7 +14,6 @@ async function search(req, res) {
     }
 
     try {
-        console.log("here")
         const data = await locationService.searchLocations(query, GOOGLE_API_KEY);
         return res.json(data);
     } catch (error) {
