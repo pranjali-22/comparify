@@ -1,7 +1,5 @@
 const axios = require("axios");
-const NodeCache = require("node-cache");
 
-const cache = new NodeCache({ stdTTL: 300 });
 
 const PLACES_AUTOCOMPLETE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
 const PLACE_DETAILS_URL = "https://maps.googleapis.com/maps/api/place/details/json";
@@ -23,17 +21,17 @@ async function getPlaceDetails(placeId, apiKey) {
 }
 
 async function searchLocations(query, apiKey) {
-    const cached = cache.get(query);
-    if (cached) return { source: "cache", results: cached };
+
+    console.log(query)
 
     const autocompleteRes = await axios.get(PLACES_AUTOCOMPLETE_URL, {
         params: {
             input: query,
             key: apiKey,
             language: "en",
-            // components: "country:in", // uncomment to restrict to India
         },
     });
+    console.log(autocompleteRes.data);
 
     const status = autocompleteRes.data.status;
     if (status !== "OK" && status !== "ZERO_RESULTS") {
@@ -60,7 +58,6 @@ async function searchLocations(query, apiKey) {
     );
 
     const filtered = results.filter(Boolean);
-    cache.set(query, filtered);
 
     return { source: "api", results: filtered };
 }

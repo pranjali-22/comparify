@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const locationRoutes = require("./routes/locationRoutes");
+const locationRoutes = require("./src/routes/LocationRoutes");
 
 const app = express();
 app.use(express.json());
