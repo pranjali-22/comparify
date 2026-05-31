@@ -1,23 +1,20 @@
 import { useState } from "react";
 
-function PickupLocationPage() {
+function DropOfLocationPage() {
     const [search, setSearch] = useState("");
 
     const addresses = [
         {
             title: "Railway Station",
-            address:
-                "Station Road, Moudhapara, Raipur, Chhattisgarh, India",
-        },
-        {
-            title: "Railway Station Taxi Stand",
-            address:
-                "Station Road, Moudhapara, Raipur, Chhattisgarh, India",
+            address: "Station Road, Moudhapara, Raipur",
         },
         {
             title: "Airport Road",
-            address:
-                "Mana, Raipur, Chhattisgarh, India",
+            address: "Mana, Raipur, Chhattisgarh",
+        },
+        {
+            title: "Pandri Bus Stand",
+            address: "Pandri, Raipur, Chhattisgarh",
         },
     ];
 
@@ -31,7 +28,7 @@ function PickupLocationPage() {
 
           body {
             margin: 0;
-            background: #f6f8fc;
+            background: #f8fafc;
             font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
           }
 
@@ -40,78 +37,71 @@ function PickupLocationPage() {
           }
 
           .header {
-            padding: 32px 40px 24px;
-            border-bottom: 1px solid #e5e7eb;
             background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 24px 32px;
           }
 
           .title {
             margin: 0;
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: #0f172a;
+            color: #111827;
           }
 
           .subtitle {
-            margin-top: 8px;
+            margin-top: 6px;
             color: #64748b;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
           }
 
           .content {
-            max-width: 820px;
+            max-width: 700px;
             margin: 0 auto;
             padding: 24px;
           }
 
           .search-box {
-            height: 72px;
-
+            height: 56px;
             background: white;
-
-            border: 1px solid #d7dce5;
-            border-radius: 22px;
+            border: 1px solid #dbe2ea;
+            border-radius: 16px;
 
             display: flex;
             align-items: center;
 
-            padding: 0 24px;
-
-            margin-bottom: 20px;
+            padding: 0 18px;
+            margin-bottom: 16px;
           }
 
           .search-icon {
-            font-size: 1.4rem;
-            color: #4f7cff;
+            color: #64748b;
           }
 
           .search-box input {
             border: none;
             outline: none;
-            width: 100%;
-
-            margin-left: 16px;
-
-            font-size: 1.2rem;
             background: transparent;
+
+            width: 100%;
+            margin-left: 12px;
+
+            font-size: 1rem;
           }
 
           .current-location {
-            background: #eef3ff;
+            background: #eef4ff;
+            border: 1px solid #d7e3ff;
+            border-radius: 16px;
 
-            border: 1px solid #d9e4ff;
-
-            border-radius: 24px;
-
-            padding: 24px;
+            padding: 16px 18px;
 
             display: flex;
             justify-content: space-between;
             align-items: center;
 
             cursor: pointer;
-
-            transition: 0.2s ease;
+            transition: 0.2s;
           }
 
           .current-location:hover {
@@ -121,92 +111,79 @@ function PickupLocationPage() {
           .location-left {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 12px;
           }
 
           .location-icon {
-            width: 52px;
-            height: 52px;
+            width: 40px;
+            height: 40px;
 
             border-radius: 50%;
 
-            background: rgba(79,124,255,0.12);
+            background: rgba(59,130,246,0.12);
 
             display: flex;
             align-items: center;
             justify-content: center;
-
-            font-size: 1.5rem;
           }
 
           .location-title {
-            font-size: 1.7rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #3b5bdb;
+            color: #2563eb;
           }
 
           .location-subtitle {
-            margin-top: 4px;
-            color: #5c7cfa;
-            font-size: 1.05rem;
-          }
-
-          .arrow-btn {
-            width: 48px;
-            height: 48px;
-
-            border-radius: 16px;
-
-            background: rgba(255,255,255,0.5);
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 1.4rem;
+            font-size: 0.85rem;
             color: #4f7cff;
+            margin-top: 2px;
           }
 
-          .results {
+          .section-title {
             margin-top: 28px;
+            margin-bottom: 12px;
+
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
           }
 
           .address-card {
             background: white;
 
-            border: 1px solid #d7dce5;
-            border-radius: 24px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
 
-            padding: 24px;
+            padding: 14px 18px;
 
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
 
-            margin-bottom: 14px;
+            margin-bottom: 10px;
 
             cursor: pointer;
-
-            transition: 0.2s ease;
+            transition: 0.2s;
           }
 
           .address-card:hover {
-            border-color: #4f7cff;
-            background: #fbfcff;
+            border-color: #3b82f6;
+            background: #fbfdff;
           }
 
           .address-left {
             display: flex;
-            gap: 18px;
+            align-items: center;
+            gap: 12px;
           }
 
           .pin {
-            width: 44px;
-            height: 44px;
+            width: 34px;
+            height: 34px;
 
             border-radius: 50%;
 
-            background: #f2f5ff;
+            background: #f1f5f9;
 
             display: flex;
             align-items: center;
@@ -216,32 +193,29 @@ function PickupLocationPage() {
           }
 
           .address-title {
-            font-size: 1.25rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: #111827;
-            margin-bottom: 6px;
+            margin-bottom: 2px;
           }
 
           .address-subtitle {
+            font-size: 0.82rem;
             color: #6b7280;
-            line-height: 1.5;
-            font-size: 1.05rem;
           }
 
-          .card-arrow {
+          .arrow {
             color: #9ca3af;
-            font-size: 1.6rem;
-            margin-left: 16px;
+            font-size: 1.2rem;
           }
         `}
             </style>
 
             <div className="pickup-page">
                 <div className="header">
-                    <h1 className="title">Set Pickup Location</h1>
-
+                    <h1 className="title">Set Drop Off Location</h1>
                     <div className="subtitle">
-                        Enter your pickup address
+                        Enter your drop off address
                     </div>
                 </div>
 
@@ -250,9 +224,12 @@ function PickupLocationPage() {
                         <span className="search-icon">🔍</span>
 
                         <input
+                            type="text"
                             placeholder="Search for an address..."
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) =>
+                                setSearch(e.target.value)
+                            }
                         />
                     </div>
 
@@ -268,48 +245,46 @@ function PickupLocationPage() {
                                 </div>
 
                                 <div className="location-subtitle">
-                                    Automatically detect your current position
+                                    Automatically detect your location
                                 </div>
                             </div>
                         </div>
 
-                        <div className="arrow-btn">
-                            ›
-                        </div>
+                        <div className="arrow">›</div>
                     </div>
 
-                    <div className="results">
-                        {addresses.map((address) => (
-                            <div
-                                className="address-card"
-                                key={address.title}
-                            >
-                                <div className="address-left">
-                                    <div className="pin">
-                                        📍
-                                    </div>
+                    <div className="section-title">
+                        Recent Locations
+                    </div>
 
-                                    <div>
-                                        <div className="address-title">
-                                            {address.title}
-                                        </div>
-
-                                        <div className="address-subtitle">
-                                            {address.address}
-                                        </div>
-                                    </div>
+                    {addresses.map((address) => (
+                        <div
+                            className="address-card"
+                            key={address.title}
+                        >
+                            <div className="address-left">
+                                <div className="pin">
+                                    📍
                                 </div>
 
-                                <div className="card-arrow">
-                                    ›
+                                <div>
+                                    <div className="address-title">
+                                        {address.title}
+                                    </div>
+
+                                    <div className="address-subtitle">
+                                        {address.address}
+                                    </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+
+                            <div className="arrow">›</div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </>
     );
 }
 
-export default PickupLocationPage;
+export default DropOfLocationPage;

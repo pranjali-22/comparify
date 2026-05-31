@@ -156,15 +156,18 @@ function CabComparisonPage() {
                     </div>
                 </div>
 
-                <div className="location-card">
+                <div
+                    className="location-card"
+                    onClick={() => navigate("/dropoff-location")}
+                >
                     <span className="label to">TO</span>
 
                     <div className="location-row">
                         <span className="dot red"></span>
 
                         <span className="location-text">
-              Set Drop-off Location
-            </span>
+            Set Drop-off Location
+        </span>
 
                         <span className="arrow">›</span>
                     </div>

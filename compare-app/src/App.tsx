@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import WelcomePage from "./pages/WelcomePage";
 import CabComparisonPage from "./pages/CabComparisonPage";
 import FoodSearchPage from "./pages/FoodSearchPage";
-import PickupLocationPage from "./pages/PickupLocationPage.tsx";
+import PickupLocationPage from "./pages/location/PickupLocationPage.tsx";
+import DropOffLocationPage from "./pages/location/DropOffLocationPage.tsx";
 
 function App() {
     return (
@@ -14,6 +15,10 @@ function App() {
                 <Route
                     path="/pickup-location"
                     element={<PickupLocationPage />}
+                />
+                <Route
+                    path="/dropOff-location"
+                    element={<DropOffLocationPage />}
                 />
             </Routes>
         </BrowserRouter>
