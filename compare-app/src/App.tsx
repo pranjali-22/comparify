@@ -4,6 +4,7 @@ import CabComparisonPage from "./pages/CabComparisonPage";
 import FoodSearchPage from "./pages/FoodSearchPage";
 import PickupLocationPage from "./pages/location/PickupLocationPage.tsx";
 import DropOffLocationPage from "./pages/location/DropOffLocationPage.tsx";
+import CabPricesPage from "./pages/prices/CabPricesPage.tsx";
 
 function App() {
     return (
@@ -19,6 +20,10 @@ function App() {
                 <Route
                     path="/dropOff-location"
                     element={<DropOffLocationPage />}
+                />
+                <Route
+                    path="/cab-prices"
+                    element={<CabPricesPage />}
                 />
             </Routes>
         </BrowserRouter>

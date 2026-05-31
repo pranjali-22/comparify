@@ -265,21 +265,11 @@ function CabComparisonPage() {
                 {canGetFares && (
                     <button
                         className="fare-btn"
-                        onClick={() => {
-                            console.log(
-                                "Get Fare Estimates"
-                            );
-
-                            console.log(
-                                pickupLocation
-                            );
-
-                            console.log(
-                                dropOffLocation
-                            );
-                        }}
+                        onClick={() =>
+                            navigate("/cab-prices")
+                        }
                     >
-                         Get Fare Estimates
+                        Get Fare Estimates
                     </button>
                 )}
             </div>
